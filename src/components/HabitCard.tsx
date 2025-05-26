@@ -18,8 +18,7 @@ export function HabitCard({ title, color }: { title: string; color: string }) {
 
   return (
     <div
-      className="relative flex flex-col h-48 border-2 rounded-lg shadow-xl transition-all duration-100 ease-in-out hover:scale-105"
-      style={{ borderColor: color }}
+      className="relative flex flex-col h-70 rounded-lg shadow-xl transition-all duration-100 ease-in-out hover:scale-105"
     >
       <div
         className="flex justify-between rounded-lg items-center w-full p-2 text-xl font-semibold border-2 z-40"
@@ -30,7 +29,7 @@ export function HabitCard({ title, color }: { title: string; color: string }) {
         <h2>{title}</h2>
         <span>✗</span>
       </div>
-      <div className="flex flex-col w-full p-4">
+      <div className="flex flex-col w-full p-4 border-l-2 border-r-2 border-b-2  h-full" style={{ borderColor: color }}>
         <div className="p-4 w-full grid grid-cols-7 grid-rows-2 justify-center align-center gap-2">
           {days.map((day, index) => (
             <span className="place-self-center" key={day + index}>

@@ -1,14 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "./components/buttons/Button";
 import { HabitCard } from "./components/HabitCard/HabitCard";
-import { AddHabitForm } from "./components/AddHabitForm";
-
-interface Habit {
-  id: string;
-  title: string;
-  color: string;
-  days: boolean[]; // Nuevo campo para persistir el estado de los días
-}
+import { AddHabitForm } from "./components/App/AddHabitForm";
+import type { Habit } from "./types/habit";
 
 type HabitCardRef = {
   resetCheckboxes: () => void;
@@ -65,10 +59,10 @@ function App() {
     habitCardRefs.current[id] = ref;
   };
 
-  const updateHabitDays = (id: string, days: boolean[]) => {
+  const updateHabitData = (id: string, data: Partial<Habit>) => {
     setHabits((prevHabits) =>
       prevHabits.map((habit) =>
-        habit.id === id ? { ...habit, days } : habit
+        habit.id === id ? { ...habit, ...data } : habit
       )
     );
   };
@@ -80,7 +74,7 @@ function App() {
           <h1 className="text-3xl font-bold">Habit tracker</h1>
           <Button onClick={resetAllHabits} text="Reset" />
         </div>
-        <AddHabitForm onSubmit={addHabit}/>
+        <AddHabitForm onSubmit={addHabit} />
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full max-w-7xl mx-auto">
@@ -96,7 +90,7 @@ function App() {
               color={habit.color}
               checkedDays={habit.days}
               onDelete={() => deleteHabit(habit.id)}
-              onDaysChange={(days) => updateHabitDays(habit.id, days)}
+              onUpdate={(data: Partial<Habit>) => updateHabitData(habit.id, data)}
               ref={(ref) => registerHabitRef(habit.id, ref)}
             />
           ))

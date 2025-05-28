@@ -1,4 +1,10 @@
-export function ProgressBar({ value, min, max }: { value: number; min: number; max: number }) {
+type ProgessBarProps = {
+    value: number;
+    min: number;
+    max: number;
+};
+
+export function ProgressBar({ value, min, max }: ProgessBarProps) {
     return (
         <div className="w-full border bg-gray-200 rounded-lg h-5 mb-4">
             <div

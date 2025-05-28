@@ -2,73 +2,85 @@ import { useState, forwardRef, useImperativeHandle } from "react";
 import { ProgressBar } from "./ProgessBar";
 import type { ChangeEvent } from "react";
 import { MdStars } from "react-icons/md";
+import { ModalConfirmDelete } from "../modals/ModalConfirmDelete";
+import type { Habit } from "../../types/habit";
+import { ModalEditHabit } from "../modals/ModalEditHabit";
 
 interface HabitCardProps {
   title: string;
   color: string;
-  onDelete?: () => void;
   checkedDays?: boolean[];
-  onDaysChange?: (days: boolean[]) => void;
+  onDelete: () => void;
+  onUpdate: (data: Partial<Habit>) => void;
 }
 
-export const HabitCard = forwardRef<
-  { resetCheckboxes: () => void },
-  HabitCardProps
->(
-  (
-    {
-      title,
-      color,
-      onDelete,
-      checkedDays = Array(7).fill(false),
-      onDaysChange,
-    },
-    ref
-  ) => {
-    const [countDays, setCountDays] = useState(
-      checkedDays.filter(Boolean).length
-    );
-    const [checkboxStates, setCheckboxStates] =
-      useState<boolean[]>(checkedDays);
+export const HabitCard = forwardRef<{ resetCheckboxes: () => void }, HabitCardProps>(
+  ({ title, color, onDelete, checkedDays = Array(7).fill(false), onUpdate }, ref) => {
+
+    const [countDays, setCountDays] = useState(checkedDays.filter(Boolean).length);
+    const [checkboxStates, setCheckboxStates] = useState<boolean[]>(checkedDays);
+    const [modalDeleteOpen, setmodalDeleteOpen] = useState(false);
+    const [modalEditOpen, setmodalEditOpen] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
+
     const days = ["M", "T", "W", "T", "F", "S", "S"];
 
     useImperativeHandle(ref, () => ({
       resetCheckboxes: () => {
         setCheckboxStates(Array(7).fill(false));
         setCountDays(0);
-        if (onDaysChange) onDaysChange(Array(7).fill(false));
+        onUpdate({ days: Array(7).fill(false) });
       },
     }));
 
-    const handleCheckboxChange = (
-      index: number,
-      e: ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleCheckboxChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
       const isChecked = e.target.checked;
       setCheckboxStates((prev) => {
         const newStates = [...prev];
         newStates[index] = isChecked;
-        if (onDaysChange) onDaysChange(newStates);
+        onUpdate({ days: newStates });
         setCountDays(newStates.filter(Boolean).length);
         return newStates;
       });
     };
 
     return (
-      <div className="relative flex flex-col h-70 rounded-lg shadow-xl transition-all duration-100 ease-in-out hover:scale-105">
+      <div
+        className="relative flex flex-col h-70 rounded-lg shadow-xl transition-all duration-100 ease-in-out hover:scale-105"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <ModalConfirmDelete
+          onClose={() => setmodalDeleteOpen(false)}
+          isOpen={modalDeleteOpen}
+          onConfirm={onDelete}
+          itemName={title}
+        />
+        <ModalEditHabit
+
+          colorSelected={color}
+          title={title}
+          isOpen={modalEditOpen}
+          onConfirm={onUpdate}
+          onClose={() => setmodalEditOpen(false)}
+        />
         <div
           className="flex justify-between rounded-lg items-center w-full p-2 text-xl font-semibold border-2 z-40"
           style={{
             backgroundColor: color,
           }}
-        >
-          <h2 className="flex gap-4 items-center">
+          >
+          <h2 className="flex gap-4 items-center"
+          
+          onClick={() => setmodalEditOpen(true)}
+          >
             {title}
             {countDays === 7 ? <MdStars /> : null}
           </h2>
           <span
-            className="cursor-pointer hover:text-red-700"
-            onClick={onDelete}
+            className={`cursor-pointer hover:text-red-700 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100 ${isHovering ? "md:opacity-100" : ""
+              }`}
+            onClick={() => setmodalDeleteOpen(true)}
           >
             ✗
           </span>

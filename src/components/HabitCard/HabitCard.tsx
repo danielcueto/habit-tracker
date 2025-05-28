@@ -5,6 +5,7 @@ import { MdStars } from "react-icons/md";
 import { ModalConfirmDelete } from "../modals/ModalConfirmDelete";
 import type { Habit } from "../../types/habit";
 import { ModalEditHabit } from "../modals/ModalEditHabit";
+import { MdModeEditOutline } from "react-icons/md";
 
 interface HabitCardProps {
   title: string;
@@ -76,6 +77,7 @@ export function HabitCard({ title, color, onDelete, checkedDays = Array(7).fill(
           onClick={() => setmodalEditOpen(true)}
         >
           {title}
+                    <MdModeEditOutline />
           {countDays === 7 ? <MdStars /> : null}
         </h2>
         <span

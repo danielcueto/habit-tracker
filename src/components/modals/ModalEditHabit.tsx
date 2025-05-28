@@ -21,7 +21,6 @@ export function ModalEditHabit({ isOpen, onConfirm, onClose, colorSelected, titl
     const [habitTitle, setHabitTitle] = useState(title);
     const [canSubmit, setCanSubmit] = useState(false);
 
-    // Actualiza los estados cuando cambian las props o cuando el modal se abre
     useEffect(() => {
         if (isOpen) {
             setSelectedColor(colorSelected);

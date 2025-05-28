@@ -3,6 +3,7 @@ import { Button } from "./components/buttons/Button";
 import { HabitCard } from "./components/HabitCard/HabitCard";
 import { AddHabitForm } from "./components/App/AddHabitForm";
 import type { Habit } from "./types/habit";
+import { SearchHabitForm } from "./components/App/SearchHabitForm";
 
 type HabitCardRef = {
   resetCheckboxes: () => void;
@@ -10,6 +11,8 @@ type HabitCardRef = {
 
 function App() {
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSortedByStreak, setIsSortedByStreak] = useState(false);
   const habitCardRefs = useRef<{ [key: string]: HabitCardRef | null }>({});
   const isMounted = useRef(false);
 
@@ -67,23 +70,51 @@ function App() {
     );
   };
 
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  const toggleSortByStreak = () => {
+    setIsSortedByStreak(!isSortedByStreak);
+  };
+
+  const filteredHabits = habits
+    .filter(habit => 
+      habit.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (isSortedByStreak) {
+        const streakA = a.days.filter(Boolean).length;
+        const streakB = b.days.filter(Boolean).length;
+        return streakB - streakA; 
+      }
+      return 0;
+    });
+
   return (
     <main className="flex min-h-screen gap-10 flex-col items-start justify-start p-6">
-      <section className="flex flex-col justify-start w-full gap-6 max-w-7xl mx-auto">
+      <header className="flex flex-col justify-start w-full gap-6 max-w-7xl mx-auto">
         <div className="flex w-full items-center justify-between">
           <h1 className="text-3xl font-bold">Habit tracker</h1>
           <Button onClick={resetAllHabits} text="Reset" />
         </div>
         <AddHabitForm onSubmit={addHabit} />
-      </section>
+        <SearchHabitForm 
+          onSearch={handleSearch} 
+          onSortByStreak={toggleSortByStreak} 
+          isSortedByStreak={isSortedByStreak} 
+        />
+      </header>
 
-      <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full max-w-7xl mx-auto">
-        {habits.length === 0 ? (
+      <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full max-w-7xl mx-auto border-t pt-6">
+        {filteredHabits.length === 0 ? (
           <p className="text-gray-500 col-span-full text-center">
-            No habits added yet. Add a new habit to get started.
+            {habits.length === 0 
+              ? "No habits added yet. Add a new habit to get started." 
+              : "No habits match your search criteria."}
           </p>
         ) : (
-          habits.map((habit) => (
+          filteredHabits.map((habit) => (
             <HabitCard
               key={habit.id}
               title={habit.title}

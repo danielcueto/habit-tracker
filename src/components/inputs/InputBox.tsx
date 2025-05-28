@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type InputBoxProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -6,19 +6,23 @@ type InputBoxProps = {
   value?: string;
 };
 
-export function InputBox({ onChange, value = "", placeholder = "Type here..." }: InputBoxProps) {
-  const [inputValue, setInputValue] = useState(value);
+export function InputBox({ onChange, value = "", placeholder = "Type here..." }: InputBoxProps) {  const [inputValue, setInputValue] = useState(value);
   const [touched, setTouched] = useState(false);
   const isEmpty = inputValue.trim().length === 0;
-
+  const isUserInput = useRef(false);
+  
   useEffect(() => {
+    if (value === "" && !isUserInput.current) {
+      setTouched(false);
+    }
     setInputValue(value);
+    isUserInput.current = false;
   }, [value]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     setTouched(true);
+    isUserInput.current = true;
     onChange(e);
   };
 

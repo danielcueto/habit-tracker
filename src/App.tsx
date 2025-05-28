@@ -95,7 +95,7 @@ function App() {
     <main className="flex min-h-screen gap-10 flex-col items-start justify-start p-6">
       <header className="flex flex-col justify-start w-full gap-6 max-w-7xl mx-auto">
         <div className="flex w-full items-center justify-between">
-          <h1 className="text-3xl font-bold">Habit tracker</h1>
+          <h1 className="text-3xl font-bold dark:text-amber-500">Habit tracker</h1>
           <Button onClick={resetAllHabits} text="Reset" />
         </div>
         <AddHabitForm onSubmit={addHabit} />

@@ -27,7 +27,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
       className="fixed inset-0 z-50 flex items-center justify-cente overflow-y-auto"
       onClick={handleOverlayClick}
     >
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto opacity-45 bg-black"></div>
+      <div className="fixed inset-0 z-50 flex items-center backdrop-blur-sm bg-black/20 justify-center overflow-y-auto"></div>
       <div className="bg-white p-6 z-60 rounded-lg shadow-lg relative min-w-86 mx-auto my-auto">
         <button
           onClick={handleClick}

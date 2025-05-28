@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { InputBox } from "../InputBox";
-import { ColorButton } from "./ColorButton";
-import { Button } from "./Button";
+import { InputBox } from "./inputs/InputBox";
+import { ColorButton } from "./buttons/ColorButton";
+import { Button } from "./buttons/Button";
 
 const colors = {
   pink: "#E89696",

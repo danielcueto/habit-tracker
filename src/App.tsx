@@ -1,12 +1,13 @@
-import { useState, useRef } from "react";
-import { Button } from "./components/Button";
-import { HabitCard } from "./components/HabitCard";
+import { useState, useRef, useEffect } from "react";
+import { Button } from "./components/buttons/Button";
+import { HabitCard } from "./components/HabitCard/HabitCard";
 import { AddHabitForm } from "./components/AddHabitForm";
 
 interface Habit {
   id: string;
   title: string;
   color: string;
+  days: boolean[]; // Nuevo campo para persistir el estado de los días
 }
 
 type HabitCardRef = {
@@ -16,8 +17,22 @@ type HabitCardRef = {
 function App() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const habitCardRefs = useRef<{ [key: string]: HabitCardRef | null }>({});
+  const isMounted = useRef(false);
 
-  console.log(habitCardRefs)
+  useEffect(() => {
+    const storedHabits = localStorage.getItem("habits");
+    if (storedHabits) {
+      setHabits(JSON.parse(storedHabits));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      localStorage.setItem("habits", JSON.stringify(habits));
+    } else {
+      isMounted.current = true;
+    }
+  }, [habits]);
 
   const addHabit = (title: string, color: string) => {
     if (title.trim() === "") {
@@ -28,6 +43,7 @@ function App() {
       id: Date.now().toString(),
       title,
       color,
+      days: Array(7).fill(false),
     };
     setHabits([...habits, newHabit]);
   };
@@ -38,7 +54,6 @@ function App() {
   };
 
   const resetAllHabits = () => {
-    // Call the reset method on each habit card reference
     Object.values(habitCardRefs.current).forEach((ref) => {
       if (ref && ref.resetCheckboxes) {
         ref.resetCheckboxes();
@@ -46,9 +61,16 @@ function App() {
     });
   };
 
-  // Function to register habit card refs
   const registerHabitRef = (id: string, ref: HabitCardRef | null) => {
     habitCardRefs.current[id] = ref;
+  };
+
+  const updateHabitDays = (id: string, days: boolean[]) => {
+    setHabits((prevHabits) =>
+      prevHabits.map((habit) =>
+        habit.id === id ? { ...habit, days } : habit
+      )
+    );
   };
 
   return (
@@ -72,7 +94,9 @@ function App() {
               key={habit.id}
               title={habit.title}
               color={habit.color}
+              checkedDays={habit.days}
               onDelete={() => deleteHabit(habit.id)}
+              onDaysChange={(days) => updateHabitDays(habit.id, days)}
               ref={(ref) => registerHabitRef(habit.id, ref)}
             />
           ))

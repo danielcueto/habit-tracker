@@ -1,4 +1,4 @@
-import { useState, useImperativeHandle } from "react";
+import { useState, useImperativeHandle, useEffect, useRef } from "react";
 import { ProgressBar } from "./ProgessBar";
 import type { ChangeEvent } from "react";
 import { MdStars } from "react-icons/md";
@@ -6,6 +6,7 @@ import { ModalConfirmDelete } from "../modals/ModalConfirmDelete";
 import type { Habit } from "../../types/habit";
 import { ModalEditHabit } from "../modals/ModalEditHabit";
 import { MdModeEditOutline } from "react-icons/md";
+import confetti from 'canvas-confetti';
 
 interface HabitCardProps {
   title: string;
@@ -24,8 +25,20 @@ export function HabitCard({ title, color, onDelete, checkedDays = Array(7).fill(
   const [modalDeleteOpen, setmodalDeleteOpen] = useState(false);
   const [modalEditOpen, setmodalEditOpen] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const prevCountRef = useRef(countDays);
 
   const days = ["M", "T", "W", "T", "F", "S", "S"];
+
+  useEffect(() => {
+    if (prevCountRef.current < 7 && countDays === 7) {
+      confetti({
+        particleCount: 200,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+    prevCountRef.current = countDays;
+  }, [countDays]);
 
   useImperativeHandle(ref, () => ({
     resetCheckboxes: () => {
@@ -77,7 +90,7 @@ export function HabitCard({ title, color, onDelete, checkedDays = Array(7).fill(
           onClick={() => setmodalEditOpen(true)}
         >
           {title}
-                    <MdModeEditOutline />
+          <MdModeEditOutline />
           {countDays === 7 ? <MdStars /> : null}
         </h2>
         <span
